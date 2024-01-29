@@ -5,6 +5,70 @@ from datetime import datetime, timedelta
 from tkinter import ttk
 from typing import Optional
 
+import winsound as ws
+
+
+class Beep:
+    """
+    Classe qui permet de faire un bip
+    """
+
+    frequency: int = 1000
+    duration: int = 1000
+
+    def __init__(self, frequency: int = 1000, duration: int = 1000) -> None:
+        """
+        Constructeur de la classe Beep
+        :param frequency: Fréquence
+        :param duration: Durée
+        """
+        self.frequency = frequency
+        self.duration = duration
+
+    def run(self):
+        """
+        Lance le bip
+        :return: None
+        """
+        ws.Beep(frequency=self.frequency, duration=self.duration)
+
+    def set_frequency(self, frequency: int) -> None:
+        """
+        Change la fréquence
+        :param frequency: Fréquence
+        :return: None
+        """
+        self.frequency = frequency
+
+    def set_duration(self, duration: int) -> None:
+        """
+        Change la durée
+        :param duration: Durée
+        :return: None
+        """
+        self.duration = duration
+
+    def get_frequency(self) -> int:
+        """
+        Récupère la fréquence
+        :return: Fréquence
+        """
+        return self.frequency
+
+    def get_duration(self) -> int:
+        """
+        Récupère la durée
+        :return: Durée
+        """
+        return self.duration
+
+    def __str__(self) -> str:
+        """
+        Convertit l'objet en chaîne de caractères
+        :return: Chaîne de caractères
+        """
+        return f"Beep(frequency={self.frequency}, duration={self.duration})"
+
 
 class Minuterie(tk.Tk):
     """
@@ -15,6 +79,8 @@ class Minuterie(tk.Tk):
     time_format: str = "%Y-%m-%d_%H:%M:%S"
     date_format: str = time_format.split("_")[0]
     hour_format: str = time_format.split("_")[1]
+    super_beep: bool = False
+    beep: Beep = Beep()
 
     # champs horaires
     initial_time: Optional[str] = None
@@ -35,6 +101,7 @@ class Minuterie(tk.Tk):
             "stop": "Arrêter",
             "reset": "Réinitialiser",
             "quit": "Quitter",
+            "beep_label": "Bip",
             "explanatory_type_label": "Choisissez le type de durée :",
             "explanatory_type": ["Durée en secondes", f"{time_format}", f"{hour_format}"],
             "explanatory_label": f"Entrez la durée en secondes ou "
@@ -49,6 +116,7 @@ class Minuterie(tk.Tk):
             "stop": "Stop",
             "reset": "Reset",
             "quit": "Quit",
+            "beep_label": "Beep",
             "explanatory_type_label": "Choose the type of duration :",
             "explanatory_type": ["Duration in seconds", f"{time_format}", f"{hour_format}"],
             "explanatory_label": f"Enter the duration in seconds or "
@@ -65,7 +133,6 @@ class Minuterie(tk.Tk):
     entry: tk.Entry = None
 
     # boutons
-    frameButtons: tk.Frame = None
     start: tk.Button = None
     stop: tk.Button = None
 
@@ -75,12 +142,17 @@ class Minuterie(tk.Tk):
     time_left_label: tk.Label = None
     time_left_label_placeholder: tk.Label = None
 
+    # beep
+    beep_Checkbutton: tk.Checkbutton = None
+    beep_var: tk.BooleanVar = None
+
     def __init__(
             self,
             langage: str = "fr",
             duration_str: Optional[str] = None,
             date_fin: Optional[str] = None,
-            duree_horaire: Optional[str] = None
+            duree_horaire: Optional[str] = None,
+            super_beep: bool = False
     ) -> None:
         """
         Constructeur de la classe interface
@@ -108,6 +180,8 @@ class Minuterie(tk.Tk):
         else:
             self.initial_time = None
             self.initial_type = None
+
+        self.super_beep = super_beep
 
         self.create_widgets()
 
@@ -160,21 +234,33 @@ class Minuterie(tk.Tk):
             self.entry.insert(0, self.initial_time)
 
         row += nb_rows
-        column = 1
+        column = 0
         nb_columns = 1
 
         # boutons
-        self.start = tk.Button(self.frameButtons, text=self.dictionary_translation[self.Langage]["start"],
+        self.start = tk.Button(self, text=self.dictionary_translation[self.Langage]["start"],
                                command=self.start_timer)
         self.start.grid(row=row, column=column, sticky=tk.E, columnspan=nb_columns, rowspan=nb_rows)
         self.bind("<Return>", lambda event: self.start_timer())
 
         column += nb_columns
 
-        self.stop = tk.Button(self.frameButtons, text=self.dictionary_translation[self.Langage]["stop"],
+        self.stop = tk.Button(self, text=self.dictionary_translation[self.Langage]["stop"],
                               command=self.stop_timer)
         self.stop.grid(row=row, column=column, sticky=tk.W, columnspan=nb_columns, rowspan=nb_rows)
         self.stop.config(state=tk.DISABLED)
+
+        column += nb_columns + 1
+
+        self.beep_var = tk.BooleanVar()
+        self.beep_Checkbutton = tk.Checkbutton(self, text=self.dictionary_translation[self.Langage]["beep_label"],
+                                               variable=self.beep_var, onvalue=True, offvalue=False)
+        self.beep_Checkbutton.grid(row=row, column=column, sticky=tk.W, columnspan=nb_columns, rowspan=nb_rows)
+
+        if self.super_beep:
+            self.beep_Checkbutton.select()
+        else:
+            self.beep_Checkbutton.deselect()
 
         row += nb_rows
         column = 0
@@ -212,6 +298,7 @@ class Minuterie(tk.Tk):
         # vérrouille le champ de saisie et le type
         self.entry.config(state=tk.DISABLED)
         self.type.config(state=tk.DISABLED)
+        self.beep_Checkbutton.config(state=tk.DISABLED)
 
         # actualise les boutons
         self.start.config(state=tk.DISABLED)
@@ -253,6 +340,7 @@ class Minuterie(tk.Tk):
         # déverrouille le champ de saisie et le type
         self.entry.config(state=tk.NORMAL)
         self.type.config(state=tk.NORMAL)
+        self.beep_Checkbutton.config(state=tk.NORMAL)
 
         # réinitialise le champ de saisie
         self.entry.delete(0, tk.END)
@@ -297,6 +385,9 @@ class Minuterie(tk.Tk):
             # si le temps est écoulé
             if horaire_actuel >= horaire_fin:
                 self.reset_timer()
+                if self.beep_var.get():
+                    self.beep.run()
+                    pass
                 tkMessageBox.showinfo("Minuterie", "Temps écoulé !")
                 return
 
@@ -529,19 +620,21 @@ def main() -> bool:
                         help="Date de fin de la minuterie au format yyyy-mm-dd_HH:MM:SS")
     parser.add_argument("-dh", "--duree_horaire", type=str, default=None,
                         help="Durée de la minuterie au format hh:mm:ss")
+    parser.add_argument("-sb", "--super_beep", action="store_true", default=False,
+                        help="Active le super bip")
     args = parser.parse_args()
 
     if args.duree is not None and args.date_fin is not None and args.duree_horaire is not None:
         print("Vous ne pouvez pas utiliser les arguments -d, -df et -dh en même temps !")
         return False
     elif args.duree is not None:
-        Minuterie(duration_str=str(args.duree))
+        Minuterie(duration_str=str(args.duree), super_beep=args.super_beep)
     elif args.date_fin is not None:
-        Minuterie(date_fin=args.date_fin)
+        Minuterie(date_fin=args.date_fin, super_beep=args.super_beep)
     elif args.duree_horaire is not None:
-        Minuterie(duree_horaire=args.duree_horaire)
+        Minuterie(duree_horaire=args.duree_horaire, super_beep=args.super_beep)
     else:
-        Minuterie()
+        Minuterie(super_beep=args.super_beep)
 
     return True
 
