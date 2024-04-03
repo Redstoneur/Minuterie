@@ -10,7 +10,11 @@ import winsound as ws
 
 class Beep:
     """
-    Classe qui permet de faire un bip
+    This class is used to generate a beep sound.
+
+    Attributes:
+        frequency (int): The frequency of the beep. Default is 1000.
+        duration (int): The duration of the beep in milliseconds. Default is 1000.
     """
 
     frequency: int = 1000
@@ -18,62 +22,96 @@ class Beep:
 
     def __init__(self, frequency: int = 1000, duration: int = 1000) -> None:
         """
-        Constructeur de la classe Beep
-        :param frequency: Fréquence
-        :param duration: Durée
+        Initializes the Beep class.
+
+        :param frequency: The frequency of the beep. Default is 1000.
+        :param duration: The duration of the beep in milliseconds. Default is 1000.
         """
         self.frequency = frequency
         self.duration = duration
 
     def run(self):
         """
-        Lance le bip
-        :return: None
+        Generates the beep sound.
         """
         ws.Beep(frequency=self.frequency, duration=self.duration)
 
     def set_frequency(self, frequency: int) -> None:
         """
-        Change la fréquence
-        :param frequency: Fréquence
-        :return: None
+        Sets the frequency of the beep.
+
+        :param frequency: The frequency to set.
         """
         self.frequency = frequency
 
     def set_duration(self, duration: int) -> None:
         """
-        Change la durée
-        :param duration: Durée
-        :return: None
+        Sets the duration of the beep.
+
+        :param duration: The duration to set in milliseconds.
         """
         self.duration = duration
 
     def get_frequency(self) -> int:
         """
-        Récupère la fréquence
-        :return: Fréquence
+        Returns the frequency of the beep.
+
+        :return: The frequency of the beep.
         """
         return self.frequency
 
     def get_duration(self) -> int:
         """
-        Récupère la durée
-        :return: Durée
+        Returns the duration of the beep.
+
+        :return: The duration of the beep in milliseconds.
         """
         return self.duration
 
     def __str__(self) -> str:
         """
-        Convertit l'objet en chaîne de caractères
-        :return: Chaîne de caractères
+        Returns a string representation of the Beep object.
+
+        :return: A string representation of the Beep object.
         """
         return f"Beep(frequency={self.frequency}, duration={self.duration})"
 
 
 class Minuterie(tk.Tk):
     """
-    Classe qui permet de voir le temps restant
+    This class is used to create a timer.
+
+    Attributes:
+        dim_columns (int): The dimension of columns. Default is 25.
+        dim_rows (int): The dimension of rows. Default is 25.
+        time_format (str): The format of time. Default is "%Y-%m-%d_%H:%M:%S".
+        date_format (str): The format of date. Default is time_format.split("_")[0].
+        hour_format (str): The format of hour. Default is time_format.split("_")[1].
+        super_beep (bool): The flag to indicate if super beep is enabled. Default is False.
+        beep (Beep): The Beep object.
+        initial_time (Optional[str]): The initial time. Default is None.
+        initial_type (Optional[int]): The initial type. Default is None.
+        time (str): The time.
+        time_left (str): The time left.
+        curent_type (str): The current type.
+        timer_running (bool): The flag to indicate if timer is running. Default is False.
+        Langage (str): The language. Default is "fr".
+        dictionary_translation (dict): The dictionary for translation.
+        label_type (tk.Label): The label for type.
+        type (ttk.Combobox): The type.
+        label (tk.Label): The label.
+        entry (tk.Entry): The entry.
+        start (tk.Button): The start button.
+        stop (tk.Button): The stop button.
+        time_label (tk.Label): The label for time.
+        time_label_placeholder (tk.Label): The placeholder for time label.
+        time_left_label (tk.Label): The label for time left.
+        time_left_label_placeholder (tk.Label): The placeholder for time left label.
+        beep_Checkbutton (tk.Checkbutton): The checkbutton for beep.
+        beep_var (tk.BooleanVar): The variable for beep.
     """
+
+    # attributs
     dim_columns: int = 25
     dim_rows: int = 25
     time_format: str = "%Y-%m-%d_%H:%M:%S"
@@ -82,7 +120,7 @@ class Minuterie(tk.Tk):
     super_beep: bool = False
     beep: Beep = Beep()
 
-    # champs horaires
+    # attributs time fields
     initial_time: Optional[str] = None
     initial_type: Optional[int] = None
     time: str = None
@@ -90,7 +128,7 @@ class Minuterie(tk.Tk):
     curent_type: str = None
     timer_running: bool = False
 
-    # dictionnaire de traduction
+    # attributs Dictionary
     Langage: str = "fr"
     dictionary_translation: dict = {
         "fr": {
@@ -106,7 +144,10 @@ class Minuterie(tk.Tk):
             "explanatory_type": ["Durée en secondes", f"{time_format}", f"{hour_format}"],
             "explanatory_label": f"Entrez la durée en secondes ou "
                                  f"la date de fin au format {time_format} ou "
-                                 f"la durée au format {hour_format} :"
+                                 f"la durée au format {hour_format} :",
+            "Error": {
+                "ArgError": "Vous ne pouvez pas utiliser les arguments -d, -df et -dh en même temps !",
+            }
         },
         "en": {
             "title": "Timer",
@@ -121,28 +162,31 @@ class Minuterie(tk.Tk):
             "explanatory_type": ["Duration in seconds", f"{time_format}", f"{hour_format}"],
             "explanatory_label": f"Enter the duration in seconds or "
                                  f"the end date in {time_format} format or "
-                                 f"the duration in {hour_format} format :"
+                                 f"the duration in {hour_format} format :",
+            "Error": {
+                "ArgError": "You cannot use the arguments -d, -df and -dh at the same time !",
+            }
         }
     }
 
-    # champs de saisie
+    # attributs widgets
     label_type: tk.Label = None
     type: ttk.Combobox = None
 
     label: tk.Label = None
     entry: tk.Entry = None
 
-    # boutons
+    # attributs buttons
     start: tk.Button = None
     stop: tk.Button = None
 
-    # champs de texte
+    # attributs text fields
     time_label: tk.Label = None
     time_label_placeholder: tk.Label = None
     time_left_label: tk.Label = None
     time_left_label_placeholder: tk.Label = None
 
-    # beep
+    # attributs beep
     beep_Checkbutton: tk.Checkbutton = None
     beep_var: tk.BooleanVar = None
 
@@ -155,18 +199,25 @@ class Minuterie(tk.Tk):
             super_beep: bool = False
     ) -> None:
         """
-        Constructeur de la classe interface
-        :param langage: Langage de l'interface
-        :return: None
+        Initializes the Minuterie class.
+
+        :param langage: The language. Default is "fr".
+        :param duration_str: The duration. Default is None.
+        :param date_fin: The end date. Default is None.
+        :param duree_horaire: The duration in hour. Default is None.
+        :param super_beep: The flag to indicate if super beep is enabled. Default is False.
+
+        :raises ValueError: If duration_str, date_fin and duree_horaire are not None.
+        :raises ValueError: If the arguments -d, -df and -dh are used at the same time.
         """
         super().__init__()
         self.title("Minuterie")
         self.resizable(False, False)
 
-        self.Langage = langage
+        self.Langage = "fr" if langage not in self.dictionary_translation.keys() else langage
 
         if duration_str is not None and date_fin is not None and duree_horaire is not None:
-            print("Vous ne pouvez pas utiliser les arguments -d, -df et -dh en même temps !")
+            print(self.dictionary_translation[self.Langage]["Error"]["ArgError"])
             raise ValueError
         elif duration_str is not None:
             self.initial_time = duration_str
@@ -189,8 +240,7 @@ class Minuterie(tk.Tk):
 
     def create_widgets(self) -> None:
         """
-        Création des widgets
-        :return: None
+        Create the widgets.
         """
 
         row: int = 0
@@ -198,7 +248,7 @@ class Minuterie(tk.Tk):
         nb_columns: int = 2
         nb_rows: int = 1
 
-        # champs de saisie
+        # input fields
         self.label_type = tk.Label(self, text=self.dictionary_translation[self.Langage]["explanatory_type_label"])
         self.label_type.grid(row=row, column=column, sticky=tk.W, columnspan=nb_columns, rowspan=nb_rows)
 
@@ -237,7 +287,7 @@ class Minuterie(tk.Tk):
         column = 0
         nb_columns = 1
 
-        # boutons
+        # buttons
         self.start = tk.Button(self, text=self.dictionary_translation[self.Langage]["start"],
                                command=self.start_timer)
         self.start.grid(row=row, column=column, sticky=tk.E, columnspan=nb_columns, rowspan=nb_rows)
@@ -266,7 +316,7 @@ class Minuterie(tk.Tk):
         column = 0
         nb_columns = 1
 
-        # champs de texte
+        # text fields
         self.time_label = tk.Label(self, text=self.dictionary_translation[self.Langage]["time"])
         self.time_label.grid(row=row, column=column, sticky=tk.W, columnspan=nb_columns, rowspan=nb_rows)
 
@@ -291,25 +341,24 @@ class Minuterie(tk.Tk):
 
     def start_timer(self) -> None:
         """
-        Démarre la minuterie
-        :return: None
+        Start the timer.
         """
 
-        # vérrouille le champ de saisie et le type
+        # locks the input field and the type
         self.entry.config(state=tk.DISABLED)
         self.type.config(state=tk.DISABLED)
         self.beep_Checkbutton.config(state=tk.DISABLED)
 
-        # actualise les boutons
+        # updates the buttons
         self.start.config(state=tk.DISABLED)
         self.stop.config(state=tk.NORMAL)
 
         if self.validate_time(self.entry.get()):
-            # actualise le temps
+            # updates the time
             self.time = self.calcul_time_end(self.entry.get())
             self.time_label_placeholder.config(text=self.time)
 
-            # actualise le temps restant
+            # updates the time left
             self.time_left = self.convert_time(self.entry.get())
             self.time_left_label_placeholder.config(text=self.time_left)
 
@@ -323,8 +372,7 @@ class Minuterie(tk.Tk):
     # noinspection PyTypeChecker
     def stop_timer(self) -> None:
         """
-        Arrête la minuterie
-        :return: None
+        Stop the timer.
         """
         self.reset_timer()
 
@@ -333,56 +381,54 @@ class Minuterie(tk.Tk):
     # noinspection PyTypeChecker
     def reset_timer(self) -> None:
         """
-        Réinitialise la minuterie
-        :return: None
+        Reset the timer.
         """
 
-        # déverrouille le champ de saisie et le type
+        # unlock the input field and the type
         self.entry.config(state=tk.NORMAL)
         self.type.config(state=tk.NORMAL)
         self.beep_Checkbutton.config(state=tk.NORMAL)
 
-        # réinitialise le champ de saisie
+        # reset the input field
         self.entry.delete(0, tk.END)
 
-        # réinitialise le type
+        # reset the type
         self.type.current(0)
         self.curent_type = self.dictionary_translation[self.Langage]["explanatory_type"][0]
 
-        # actualise le temps
+        # update the time
         self.time = None
         self.time_label_placeholder.config(text="")
 
-        # actualise le temps restant
+        # update the time left
         self.time_left = None
         self.time_left_label_placeholder.config(text="")
 
-        # actualise les boutons
+        # update the buttons
         self.start.config(state=tk.NORMAL)
         self.stop.config(state=tk.DISABLED)
 
-        # met à jour l'affichage des labels
+        # update display of labels
         self.update()
 
     def timer(self) -> None:
         """
-        Minuterie
-        :return: None
+        Timer.
         """
 
         if self.timer_running:
 
-            # actualiser le temps restant
+            # update the time left
             horaire_actuel = datetime.now()
             horaire_fin = datetime.strptime(self.time, Minuterie.time_format)
             time_left = horaire_fin - horaire_actuel
             formatted_time_left = str(time_left).split(".")[0]
             self.time_left_label_placeholder.config(text=formatted_time_left)
 
-            # actualise l'affichage
+            # update the display
             self.update()
 
-            # si le temps est écoulé
+            # check if the time is over
             if horaire_actuel >= horaire_fin:
                 self.reset_timer()
                 if self.beep_var.get():
@@ -391,7 +437,7 @@ class Minuterie(tk.Tk):
                 tkMessageBox.showinfo("Minuterie", "Temps écoulé !")
                 return
 
-            # rappel de la fonction
+            # call the timer function every second
             self.after(1000, self.timer)
         else:
             tkMessageBox.showinfo("Minuterie", "Minuterie arrêtée !")
@@ -399,9 +445,9 @@ class Minuterie(tk.Tk):
     # noinspection PyUnusedLocal
     def change_type(self, *args) -> None:
         """
-        Change le type de durée
-        :param args: Arguments
-        :return: None
+        Change the type.
+
+        :param args: The arguments.
         """
 
         if self.curent_type is None:
@@ -413,17 +459,18 @@ class Minuterie(tk.Tk):
         if self.curent_type == self.type.get():
             return
 
-        # actualise le type
+        # update the type
         self.curent_type = self.type.get()
 
-        # actualise le champ de saisie
+        # update the input field
         self.entry.delete(0, tk.END)
 
     def validate_time(self, time: str) -> bool:
         """
-        Vérifie la durée
-        :param time: Durée
-        :return: True si la durée est valide, False sinon
+        Validate the time.
+
+        :param time: Time
+        :return: True if the format is valid, False otherwise
         """
 
         if self.curent_type == self.dictionary_translation[self.Langage]["explanatory_type"][0]:
@@ -437,9 +484,10 @@ class Minuterie(tk.Tk):
 
     def convert_time(self, time: str) -> Optional[str]:
         """
-        Convertit le temps en time
-        :param time: Temps
-        :return: Temps
+        Convert the time.
+
+        :param time: Time
+        :return: Time
         """
 
         if self.curent_type == self.dictionary_translation[self.Langage]["explanatory_type"][0]:
@@ -453,9 +501,10 @@ class Minuterie(tk.Tk):
 
     def calcul_time_end(self, time: str) -> Optional[str]:
         """
-        Calcul la date de fin de la minuterie
-        :param time: Durée
-        :return: Date de fin de la minuterie
+        Calculate the end time of the timer.
+
+        :param time: Time
+        :return: End time of the timer
         """
         if self.curent_type == self.dictionary_translation[self.Langage]["explanatory_type"][0]:
             return self.calcul_time_end_by_second(time)
@@ -469,9 +518,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def validate_format_time(time: str) -> bool:
         """
-        Vérifie le format de la date
-        :param time: Date
-        :return: True si le format est valide, False sinon
+        Validate the format of the time.
+
+        :param time: Time
+        :return: True if the format is valid, False otherwise
         """
 
         try:
@@ -484,9 +534,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def validate_format_hour(hour: str) -> bool:
         """
-        Vérifie le format de l'heure
-        :param hour: Heure
-        :return: True si le format est valide, False sinon
+        Validate the format of the hour.
+
+        :param hour: Hour
+        :return: True if the format is valid, False otherwise
         """
 
         try:
@@ -499,9 +550,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def validate_format_date(date: str) -> bool:
         """
-        Vérifie le format de la date
+        Validate the format of the date.
+
         :param date: Date
-        :return: True si le format est valide, False sinon
+        :return: True if the format is valid, False otherwise
         """
 
         try:
@@ -514,9 +566,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def validate_format_seconde(seconde: str) -> bool:
         """
-        Vérifie le format de la seconde
-        :param seconde: Seconde
-        :return: True si le format est valide, False sinon
+        Validate the format of the second.
+
+        :param seconde: Second
+        :return: True if the format is valid, False otherwise
         """
         try:
             s = int(seconde)
@@ -534,9 +587,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def convert_second_to_time(second: str) -> Optional[str]:
         """
-        Convertit les secondes en temps
-        :param second: Secondes
-        :return: Temps
+        Convert the second to time.
+
+        :param second: Second
+        :return: Time
         """
         if not Minuterie.validate_format_seconde(second):
             return None
@@ -546,9 +600,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def convert_hour_to_time(hour: str) -> str:
         """
-        Convertit l'heure en temps
-        :param hour: horaire format hh:mm:ss
-        :return: Temps
+        Convert the hour to time.
+
+        :param hour: Hour
+        :return: Time
         """
         time = datetime.strptime(hour, Minuterie.hour_format)
 
@@ -557,9 +612,10 @@ class Minuterie(tk.Tk):
     @staticmethod
     def calcul_time_end_by_second(second: str) -> str:
         """
-        Calcul la date de fin de la minuterie
-        :param second: Secondes
-        :return: Date de fin de la minuterie
+        Calculate the end time of the timer.
+
+        :param second: Second
+        :return: End time of the timer
         """
         time = datetime.now() + timedelta(seconds=int(second))
 
@@ -568,18 +624,20 @@ class Minuterie(tk.Tk):
     @staticmethod
     def calcul_time_end_by_time(time: str) -> str:
         """
-        Calcul la date de fin de la minuterie
-        :param time: Temps
-        :return: Date de fin de la minuterie
+        Calculate the end time of the timer.
+
+        :param time: Time
+        :return: End time of the timer
         """
         return time
 
     @staticmethod
     def calcul_time_end_by_hour(hour: str) -> str:
         """
-        Calcul la date de fin de la minuterie
-        :param hour: Heure
-        :return: Date de fin de la minuterie
+        Calculate the end time of the timer.
+
+        :param hour: Hour
+        :return: End time of the timer
         """
         time = datetime.now() + timedelta(hours=int(hour.split(":")[0]), minutes=int(hour.split(":")[1]),
                                           seconds=int(hour.split(":")[2]))
@@ -589,8 +647,9 @@ class Minuterie(tk.Tk):
     @staticmethod
     def dim_by_nb_columns(nb_columns: int) -> int:
         """
-        Calcul les dimensions en fonction du nombre de colonnes
-        :param nb_columns: Nombre de colonnes
+        Calculate the dimensions based on the number of columns.
+
+        :param nb_columns: Number of columns
         :return: Dimensions
         """
         return nb_columns * Minuterie.dim_columns
@@ -598,8 +657,9 @@ class Minuterie(tk.Tk):
     @staticmethod
     def dim_by_nb_rows(nb_rows: int) -> int:
         """
-        Calcul les dimensions en fonction du nombre de lignes
-        :param nb_rows: Nombre de lignes
+        Calculate the dimensions based on the number of rows.
+
+        :param nb_rows: Number of rows
         :return: Dimensions
         """
         return nb_rows * Minuterie.dim_rows
@@ -607,25 +667,25 @@ class Minuterie(tk.Tk):
 
 # noinspection PyTypeChecker
 def main() -> bool:
-    programme_name: str = "Minuterie"
-    programme_version: str = "v0.5.0"
-    programme_description: str = "Minuterie en Python"
+    program_name: str = "Minuterie"
+    program_version: str = "v0.6.0"
+    program_description: str = "Minuterie en Python"
 
-    parser = argparse.ArgumentParser(description=programme_description)
+    parser = argparse.ArgumentParser(description=program_description)
     parser.add_argument("-v", "--version", action="version",
-                        version=f"{programme_name} [%(prog)s] : {programme_version}")
-    parser.add_argument("-d", "--duree", type=int, default=None,
-                        help="Durée de la minuterie en secondes")
-    parser.add_argument("-df", "--date_fin", type=str, default=None,
-                        help="Date de fin de la minuterie au format yyyy-mm-dd_HH:MM:SS")
-    parser.add_argument("-dh", "--duree_horaire", type=str, default=None,
-                        help="Durée de la minuterie au format hh:mm:ss")
+                        version=f"{program_name} [%(prog)s] : {program_version}")
+    parser.add_argument("-d", "--duration", type=int, default=None,
+                        help="Duration of the timer in seconds")
+    parser.add_argument("-ed", "--end_date", type=str, default=None,
+                        help="End date of the timer in the format yyyy-mm-dd_HH:MM:SS")
+    parser.add_argument("-dh", "--duration_hour", type=str, default=None,
+                        help="Duration of the timer in the format hh:mm:ss")
     parser.add_argument("-sb", "--super_beep", action="store_true", default=False,
-                        help="Active le super bip")
+                        help="Activate the super beep")
     args = parser.parse_args()
 
-    if args.duree is not None and args.date_fin is not None and args.duree_horaire is not None:
-        print("Vous ne pouvez pas utiliser les arguments -d, -df et -dh en même temps !")
+    if args.duration is not None and args.end_date is not None and args.duration_hour is not None:
+        print("You cannot use the arguments -d, -ed and -dh at the same time!")
         return False
     elif args.duree is not None:
         Minuterie(duration_str=str(args.duree), super_beep=args.super_beep)
