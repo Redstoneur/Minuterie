@@ -1,14 +1,14 @@
 # Minuterie
 
-Minuterie is a Python-based timer application that allows you to set a timer with a specific duration or end time. It
-also supports a "super beep" feature that can be enabled to alert you when the timer ends.
-
 ![License](https://img.shields.io/github/license/Redstoneur/Minuterie)
 ![Top Language](https://img.shields.io/github/languages/top/Redstoneur/Minuterie)
 ![Build Status](https://img.shields.io/github/actions/workflow/status/Redstoneur/Minuterie/build-and-publish.yml)
 ![Latest Release](https://img.shields.io/github/v/release/Redstoneur/Minuterie)
 ![Release Date](https://img.shields.io/github/release-date/Redstoneur/Minuterie)
 ![Last Commit](https://img.shields.io/github/last-commit/Redstoneur/Minuterie)
+
+Minuterie is a Python-based timer application that allows you to set a timer with a specific duration or end time. It
+also supports a "super beep" feature that can be enabled to alert you when the timer ends.
 
 ## Features
 
